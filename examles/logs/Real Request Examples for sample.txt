@@ -1,0 +1,181 @@
+
+https://mittal26081999.medium.com/unknown-facts-on-bit-torrent-architecture-7333c356882
+https://news.ycombinator.com/item?id=23561904
+
+Request
+	len=36
+	User Datagram Protocol, Src Port: 58406, Dst Port: 80
+	Data: 9883eaa180d823af0000000200000000d0d14c926e6e99761a2fdcff27b403d96376eff6
+
+Request 
+	 Len=98
+	 User Datagram Protocol, Src Port: 58406, Dst Port: 80
+	 Data: 9883eaa180d823af0000000100000004d0d14c926e6e99761a2fdcff27b403d96376eff62d4254376230572d9fb73a9792367ab8ca73ebcc0000000000000000000000000000001400000000000000000000000200000000782e9b28ffffffffe426
+	 
+ 
+ Resoponse
+	 User Datagram Protocol, Src Port: 80, Dst Port: 58406
+	0000000200000000000000000000000000000003
+ 
+ 
+ -------------
+ 
+Bt-Tracker (Connection Request)
+	len=58
+	000004172710198000000000c6e80a62
+	
+	BitTorrent Tracker
+		[Message Type: Connection Request (0)]
+		Protocol: 0x0000041727101980 - 00 00 04 17 27 10 19 80
+		Action: Connect (0) - 00 00 00 00
+		Transaction Id: 3337095778 - c6 e8 0a 62
+
+ 
+ 
+Bt-Tracker (ConnectionResonse)
+	len=60
+	00 00 00 00 54 ee 10 56 ab d0 cc 0e 75 da c9 47
+	
+	 BitTorrent Tracker
+		[Message Type: Connection Response (1)]
+		Action: Connect (0) - 00 00 00 00
+		Transaction Id: 1424887894 - 54 ee 10 56
+		Connection Id: 12380619738120374599 - ab d0 cc 0e 75 da c9 47
+
+
+----------
+
+Bt-Tracker (AnnounceRequest)
+
+	len=140
+	abd0cc0e75dac9470000000100000000d0d14c926e6e99761a2fdcff27b403d96376eff62d4254376230572d9fb73a9792367ab8ca73ebcc0000000000000000000000000000001400000000000000000000000000000000782e9b28ffffffffe426
+ 
+	 
+	BitTorrent Tracker
+		[Message Type: Announce Request (2)]
+		Connection Id: 12380619738120374599
+		Action: Announce (1)
+		Transaction Id: 0
+		Info Hash: d0d14c926e6e99761a2fdcff27b403d96376eff6
+		Peer Id: 2d4254376230572d9fb73a9792367ab8ca73ebcc
+		Downloaded: 0
+		Left: 20
+		Uploaded: 0
+		Event: None (0)
+		IP Address: 0.0.0.0
+		Key: 2016320296
+		Num Want: -1
+		Port: 58406
+
+
+
+Bt-Tracker (AnnounceResonse: 2 trackers)
+ len = 74
+ 00000001000000000000072600000002000000004f35ad62c8d5c8cbaa30e426
+ BitTorrent Tracker
+    [Message Type: Announce Response (3)]
+    Action: Announce (1)
+    Transaction Id: 0
+    Interval: 1830
+    Leechers: 2
+    Seeders: 0
+    Trackers: 2 trackers
+        Tracker 1, IPv4/Port: 79.53.173.98:51413
+            IP: 79.53.173.98
+            (TCP) Port: 51413
+        Tracker 2, IPv4/Port: 200.203.170.48:58406
+            IP: 200.203.170.48
+            (TCP) Port: 58406
+
+---------------------------
+
+
+Bt-Tracker (Scrape Request)
+	len = 78
+	abd0cc0e75dac9470000000254ee1057d0d14c926e6e99761a2fdcff27b403d96376eff6
+
+	BitTorrent Tracker
+		[Message Type: Scrape Request (4)]
+		Connection Id: 12380619738120374599
+		Action: Scrape (2)
+		Transaction Id: 1424887895
+		Info Hash: d0d14c926e6e99761a2fdcff27b403d96376eff6
+
+
+
+Bt-Tracker (Scrape Response)
+	len = 62
+	0000000254ee1057000000000000000000000002
+	BitTorrent Tracker
+		[Message Type: Scrape Response (5)]
+		Action: Scrape (2)
+		Transaction Id: 1424887895
+		Seeders: 0
+		Completed: 0
+		Leechers: 2
+
+---------------------------
+
+	BT-DHT	(Find_node Target=08007fdb000056920000306200000268000053f9)
+		len= 145
+		64313a6164323a696432303ab804fcd6ae529049f1f1bbe9ebb3a6db3c870ce1363a74617267657432303a08007fdb000056920000306200000268000053f965313a71393a66696e645f6e6f6465313a74343ae66b0000313a76343a5554b79f313a79313a7165
+		
+		Internet Protocol Version 4, Src: 192.168.1.5, Dst: 194.154.91.2
+		User Datagram Protocol, Src Port: 58406, Dst Port: 51413
+			BitTorrent DHT Protocol
+				Request arguments: Dictionary...
+					Key: a
+					Value: Dictionary...
+						id: b804fcd6ae529049f1f1bbe9ebb3a6db3c870ce1
+						target: 08007fdb000056920000306200000268000053f9
+						Terminator: e
+				Request type: find_node
+					Key: q
+					Value: find_node
+				Transaction ID: e66b0000
+					Key: t
+					Value: e66b0000
+				Version: 5554b79f
+					Key: v
+					Value: 5554b79f
+				Message type: Request
+					Key: y
+					Value: q
+				Terminator: e
+
+
+BT-DHT		(Response Nodes=8)
+		Len= 310
+		d85ed3f085cacced2197edc0080045000128ab0800007111be72c29a5b02c0a80105c8d5e42601141c1364313a7264323a696432303a4622edc5201ba276ba2be44608e5c96b45e0ed8d353a6e6f6465733230383a0dac6a31a26d43e6bb5c6969e4cbaae35d01fb338e36a9b260350111d366cf0dbd301ce365dc4386185d3868c15b05bdbb5a1ae007ab6d0e04a6e8e5fe2dd7fd829cce5f53a1cd6ed5884f1bc8d51c5097f231a0b32ae7593a0297a7414ee5b7f94305bdbb5ac8df17a5560ec5e33fc4f71216f253238e84376c872705bdbb5a1afe22806efaa2728b25b1e4aa5b4a27b037bae56a6640624ab71ae126d1d55feaa3344922901dead5d2e698705c8d4bd5884fcd1c183ef4e74211ed6fb2c11fa401a7fc9c9c4258e036d5884fee1b2265313a74343ae66b0000313a79313a7265
+		
+		Internet Protocol Version 4, Src: 194.154.91.2, Dst: 192.168.1.5
+		User Datagram Protocol, Src Port: 51413, Dst Port: 58406
+		
+		BitTorrent DHT Protocol
+			Response values: Dictionary...
+				Key: r
+				Value: Dictionary...
+					id: 4622edc5201ba276ba2be44608e5c96b45e0ed8d
+						Key: id
+						Value: 4622edc5201ba276ba2be44608e5c96b45e0ed8d
+					nodes: 8
+						Key: nodes
+						Value: 8 nodes
+							Node 1 (id: 0dac6a31a26d43e6bb5c6969e4cbaae35d01fb33, IPv4/Port: 142.54.169.178:24629)
+							Node 2 (id: 0111d366cf0dbd301ce365dc4386185d3868c15b, IPv4/Port: 5.189.187.90:6880)
+							Node 3 (id: 07ab6d0e04a6e8e5fe2dd7fd829cce5f53a1cd6e, IPv4/Port: 213.136.79.27:51413)
+							Node 4 (id: 1c5097f231a0b32ae7593a0297a7414ee5b7f943, IPv4/Port: 5.189.187.90:51423)
+							Node 5 (id: 17a5560ec5e33fc4f71216f253238e84376c8727, IPv4/Port: 5.189.187.90:6910)
+							Node 6 (id: 22806efaa2728b25b1e4aa5b4a27b037bae56a66, IPv4/Port: 64.98.74.183:6881)
+							Node 7 (id: 26d1d55feaa3344922901dead5d2e698705c8d4b, IPv4/Port: 213.136.79.205:7192)
+							Node 8 (id: 3ef4e74211ed6fb2c11fa401a7fc9c9c4258e036, IPv4/Port: 213.136.79.238:6946)
+					Terminator: e
+			Transaction ID: e66b0000
+				Key: t
+				Value: e66b0000
+			Message type: Response
+				Key: y
+				Value: r
+			Terminator: e
+
+
