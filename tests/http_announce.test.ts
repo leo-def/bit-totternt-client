@@ -6,7 +6,7 @@ import { FileMetaInfoContent } from '../src/types/bencode/file/FileMetaInfoConte
 export async function runHttpAnnounceTests() {
   const fileMeta = new FileMetaInfo(
     'http://tracker.test/announce',
-    new FileMetaInfoContent(100, 'file', 16384, '01234567890123456789')
+    new FileMetaInfoContent(100, 'file', 16384, '01234567890123456789'),
   );
   const peerInfo: PeerInfo = { ip: '127.0.0.1', port: 6881, id: '0123456789012345678901234567890123456789' };
   const request = AnnounceHttpRequest.build(peerInfo, fileMeta);

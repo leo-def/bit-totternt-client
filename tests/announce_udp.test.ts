@@ -1,7 +1,5 @@
 import { AnnounceUdpRequest } from '../src/types/announce/udp/AnnounceUdpRequest';
 import { TrackerUdpRequestActionEnum } from '../src/enum/TrackerUdpRequestAction.enum';
-import { FileMetaInfo } from '../src/types/bencode/file/FileMetaInfo';
-import { FileMetaInfoContent } from '../src/types/bencode/file/FileMetaInfoContent';
 
 export async function runAnnounceUdpTests() {
   const request = new AnnounceUdpRequest(

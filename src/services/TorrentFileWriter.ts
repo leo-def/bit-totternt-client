@@ -1,8 +1,8 @@
-import crypto from "crypto";
-import fs from "fs/promises";
-import path from "path";
-import { FileMetaInfo } from "../types/bencode/file/FileMetaInfo";
-import { File } from "../types/bencode/file/File";
+import crypto from 'crypto';
+import fs from 'fs/promises';
+import path from 'path';
+import { FileMetaInfo } from '../types/bencode/file/FileMetaInfo';
+import { File } from '../types/bencode/file/File';
 
 export interface TorrentWriteResult {
   readonly outputPaths: Array<string>;
@@ -13,12 +13,12 @@ export class TorrentFileWriter {
   static getPieceHashes(fileMetaInfo: FileMetaInfo): Array<string> {
     const pieces = TorrentFileWriter.binaryStringToBuffer(fileMetaInfo.info.pieces);
     if (pieces.length % 20 !== 0) {
-      throw new Error("Invalid pieces hash list length");
+      throw new Error('Invalid pieces hash list length');
     }
 
     const hashes = new Array<string>();
     for (let i = 0; i < pieces.length; i += 20) {
-      hashes.push(pieces.subarray(i, i + 20).toString("hex"));
+      hashes.push(pieces.subarray(i, i + 20).toString('hex'));
     }
     return hashes;
   }
@@ -31,7 +31,7 @@ export class TorrentFileWriter {
   }
 
   static verifyPiece(piece: Buffer, expectedHashHex: string): boolean {
-    return crypto.createHash("sha1").update(piece).digest("hex") === expectedHashHex;
+    return crypto.createHash('sha1').update(piece).digest('hex') === expectedHashHex;
   }
 
   static assembleVerifiedBuffer(fileMetaInfo: FileMetaInfo, pieces: Array<Buffer>): Buffer {
@@ -53,7 +53,11 @@ export class TorrentFileWriter {
     return Buffer.concat(pieces, TorrentFileWriter.getTotalLength(fileMetaInfo));
   }
 
-  static async write(fileMetaInfo: FileMetaInfo, pieces: Array<Buffer>, outputDir: string): Promise<TorrentWriteResult> {
+  static async write(
+    fileMetaInfo: FileMetaInfo,
+    pieces: Array<Buffer>,
+    outputDir: string,
+  ): Promise<TorrentWriteResult> {
     const content = TorrentFileWriter.assembleVerifiedBuffer(fileMetaInfo, pieces);
     await fs.mkdir(outputDir, { recursive: true });
 
@@ -104,11 +108,16 @@ export class TorrentFileWriter {
   private static resolveSafeOutputPath(outputDir: string, segments: Array<string>): string {
     const safeSegments = segments.filter((segment: string) => !!segment);
     if (safeSegments.length === 0) {
-      throw new Error("Invalid torrent output path");
+      throw new Error('Invalid torrent output path');
     }
 
     for (const segment of safeSegments) {
-      if (path.isAbsolute(segment) || segment === ".." || segment.includes(`..${path.sep}`) || segment.includes("/../")) {
+      if (
+        path.isAbsolute(segment) ||
+        segment === '..' ||
+        segment.includes(`..${path.sep}`) ||
+        segment.includes('/../')
+      ) {
         throw new Error(`Unsafe torrent output path segment: ${segment}`);
       }
     }
@@ -116,7 +125,7 @@ export class TorrentFileWriter {
     const base = path.resolve(outputDir);
     const outputPath = path.resolve(base, ...safeSegments);
     if (outputPath !== base && !outputPath.startsWith(base + path.sep)) {
-      throw new Error("Unsafe torrent output path");
+      throw new Error('Unsafe torrent output path');
     }
     return outputPath;
   }

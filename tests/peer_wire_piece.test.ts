@@ -68,7 +68,15 @@ export async function runPeerWirePieceTests() {
   }
 
   const peerInfo: PeerInfo = { ip: '127.0.0.1', port: address.port, id: clientPeerId };
-  const received = await PeerWireClient.downloadPiece(peerInfo, infoHash, clientPeerId, pieceIndex, begin, block.length, 2000);
+  const received = await PeerWireClient.downloadPiece(
+    peerInfo,
+    infoHash,
+    clientPeerId,
+    pieceIndex,
+    begin,
+    block.length,
+    2000,
+  );
   server.close();
 
   const expectedHash = crypto.createHash('sha1').update(block).digest('hex');

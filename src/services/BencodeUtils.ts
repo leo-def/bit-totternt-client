@@ -1,21 +1,18 @@
-import { BencodeResult } from "../types/bencode/BencodeResult";
-import { BencodeStringSize } from "../types/bencode/BencodeStringSize";
-import { BencodeValue } from "../types/bencode/BencodeValue";
+import { BencodeResult } from '../types/bencode/BencodeResult';
+import { BencodeStringSize } from '../types/bencode/BencodeStringSize';
+import { BencodeValue } from '../types/bencode/BencodeValue';
 
 export class BencodeUtils {
-  static handle(
-    str: Buffer,
-    startIndex: number = 0
-  ): BencodeResult | undefined {
+  static handle(str: Buffer, startIndex: number = 0): BencodeResult | undefined {
     if (Number.isNaN(startIndex)) {
-      throw this.throw(startIndex, "handle");
+      throw this.throw(startIndex, 'handle');
     }
     const identifier = this.charAt(str, startIndex);
-    if (identifier === "d") {
+    if (identifier === 'd') {
       return BencodeUtils.createBencodeMap(str, startIndex);
-    } else if (identifier === "l") {
+    } else if (identifier === 'l') {
       return BencodeUtils.createBencodeList(str, startIndex);
-    } else if (identifier === "i") {
+    } else if (identifier === 'i') {
       return BencodeUtils.createBencodeNumber(str, startIndex);
     } else if (!Number.isNaN(identifier)) {
       return BencodeUtils.createBencodeString(str, startIndex);
@@ -24,27 +21,21 @@ export class BencodeUtils {
   }
 
   static createBencodeMap(str: Buffer, startIndex: number = 0): BencodeResult {
-    const { value, lastIndex } = BencodeUtils.createBencodeList(
-      str,
-      startIndex
-    );
+    const { value, lastIndex } = BencodeUtils.createBencodeList(str, startIndex);
     let currKey: string | null = null;
-    const resultValue = (value as Array<BencodeValue>).reduce(
-      (prev: Object, curr: BencodeValue) => {
-        if (currKey == null) {
-          currKey = curr as string;
-          return prev;
-        } else {
-          const newValue = { [currKey]: curr };
-          currKey = null;
-          return {
-            ...prev,
-            ...newValue,
-          };
-        }
-      },
-      {} as Object
-    );
+    const resultValue = (value as Array<BencodeValue>).reduce((prev: Record<string, any>, curr: BencodeValue) => {
+      if (currKey == null) {
+        currKey = curr as string;
+        return prev;
+      } else {
+        const newValue = { [currKey]: curr };
+        currKey = null;
+        return {
+          ...prev,
+          ...newValue,
+        };
+      }
+    }, {} as Record<string, any>);
     return {
       value: resultValue,
       lastIndex,
@@ -58,50 +49,39 @@ export class BencodeUtils {
     do {
       const currResult = BencodeUtils.handle(str, lastIndex);
       if (!currResult) {
-        throw this.throw(lastIndex, "create bencode list");
+        throw this.throw(lastIndex, 'create bencode list');
       }
       value.push(currResult.value);
       lastIndex = currResult.lastIndex;
       nextChar = this.charAt(str, lastIndex);
-    } while (nextChar !== "e");
+    } while (nextChar !== 'e');
     return {
       value,
       lastIndex,
     };
   }
 
-  static createBencodeNumber(
-    str: Buffer,
-    startIndex: number = 0
-  ): BencodeResult {
+  static createBencodeNumber(str: Buffer, startIndex: number = 0): BencodeResult {
     let lastIndex = startIndex + 1;
     let nextChar = null;
     do {
       nextChar = this.charAt(str, lastIndex);
-      if (nextChar !== "e" && Number.isNaN(nextChar)) {
-        throw this.throw(lastIndex, "create bencode number");
+      if (nextChar !== 'e' && Number.isNaN(nextChar)) {
+        throw this.throw(lastIndex, 'create bencode number');
       }
       lastIndex++;
-    } while (nextChar !== "e");
-    const value = Number.parseInt(
-      this.join(str, startIndex + 1, lastIndex - 1)
-    );
+    } while (nextChar !== 'e');
+    const value = Number.parseInt(this.join(str, startIndex + 1, lastIndex - 1));
     return {
       value,
       lastIndex,
     };
   }
 
-  static createBencodeString(
-    str: Buffer,
-    startIndex: number = 0
-  ): BencodeResult {
-    const { size, lastIndex } = BencodeUtils.getBencodeStringSize(
-      str,
-      startIndex
-    );
+  static createBencodeString(str: Buffer, startIndex: number = 0): BencodeResult {
+    const { size, lastIndex } = BencodeUtils.getBencodeStringSize(str, startIndex);
     // scape:
-    let index = lastIndex + 1;
+    const index = lastIndex + 1;
     const lastStrIndex = index + size;
     const value = this.join(str, index, lastStrIndex);
     return {
@@ -110,18 +90,15 @@ export class BencodeUtils {
     };
   }
 
-  static getBencodeStringSize(
-    str: Buffer,
-    startIndex: number = 0
-  ): BencodeStringSize {
+  static getBencodeStringSize(str: Buffer, startIndex: number = 0): BencodeStringSize {
     let lastIndex = startIndex + 0;
     let nextChar = null;
     do {
       nextChar = this.charAt(str, lastIndex++);
       if (Number.isNaN(nextChar)) {
-        throw this.throw(lastIndex - 1, "get bencode string size");
+        throw this.throw(lastIndex - 1, 'get bencode string size');
       }
-    } while (nextChar !== ":");
+    } while (nextChar !== ':');
     const sizeStr = this.join(str, startIndex, lastIndex - 1);
     const size = Number(sizeStr);
     return {
@@ -132,9 +109,7 @@ export class BencodeUtils {
 
   static throw(index?: number, on?: string) {
     return new Error(
-      `Invalid bencode format${index !== undefined ? " at: " + index : ""}${
-        on !== undefined ? " on: " + on : ""
-      }`
+      `Invalid bencode format${index !== undefined ? ' at: ' + index : ''}${on !== undefined ? ' on: ' + on : ''}`,
     );
   }
 
@@ -143,13 +118,13 @@ export class BencodeUtils {
     for (let i = start; i < end; i++) {
       result.push(this.charAt(str, i));
     }
-    return result.join("");
+    return result.join('');
   }
 
   static charAt(str: Buffer, index: number = 0): string {
     const byteAt = str.at(index);
     if (byteAt === undefined) {
-      throw this.throw(index, "chat at");
+      throw this.throw(index, 'chat at');
     }
     return String.fromCharCode(byteAt);
   }

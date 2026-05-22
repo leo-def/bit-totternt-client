@@ -17,7 +17,10 @@ export async function runRequestUtilsUdpTests() {
     server.send(Buffer.from('pong'), 0, 4, rinfo.port, rinfo.address);
   });
 
-  const response = await RequestUtils.udp(`udp://127.0.0.1:${address.port}`, { body: Buffer.from('ping'), timeout: 2000 });
+  const response = await RequestUtils.udp(`udp://127.0.0.1:${address.port}`, {
+    body: Buffer.from('ping'),
+    timeout: 2000,
+  });
   server.close();
 
   if (response.toString() !== 'pong') {

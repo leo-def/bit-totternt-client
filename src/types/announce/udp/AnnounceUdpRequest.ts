@@ -1,9 +1,9 @@
-import crypto from "crypto";
-import { TrackerUdpRequestActionEnum } from "../../../enum/TrackerUdpRequestAction.enum";
-import { FileMetaInfo } from "../../bencode/file/FileMetaInfo";
-import { PeerInfo } from "../../PeerInfo";
-import { AnnounceRequest } from "../AnnounceRequest";
-import { ConnectUdpResponse } from "./ConnectUdpResponse";
+import crypto from 'crypto';
+import { TrackerUdpRequestActionEnum } from '../../../enum/TrackerUdpRequestAction.enum';
+import { FileMetaInfo } from '../../bencode/file/FileMetaInfo';
+import { PeerInfo } from '../../PeerInfo';
+import { AnnounceRequest } from '../AnnounceRequest';
+import { ConnectUdpResponse } from './ConnectUdpResponse';
 
 export class AnnounceUdpRequest implements AnnounceRequest {
   constructor(
@@ -84,7 +84,7 @@ export class AnnounceUdpRequest implements AnnounceRequest {
      * Offset  Size    Name    Value
      * 88      32-bit integer  key
      */
-    readonly key?: number
+    readonly key?: number,
   ) {}
 
   static build(info: PeerInfo, file: FileMetaInfo): AnnounceUdpRequest {
@@ -93,7 +93,9 @@ export class AnnounceUdpRequest implements AnnounceRequest {
     const infoHash = (file as any).__infoHashHex ?? file.info?.pieces;
     const peerId = info.id;
     const downloaded = 0n;
-    const left = BigInt(file.info?.length ?? file.info?.files?.reduce((total, torrentFile) => total + torrentFile.length, 0) ?? 0);
+    const left = BigInt(
+      file.info?.length ?? file.info?.files?.reduce((total, torrentFile) => total + torrentFile.length, 0) ?? 0,
+    );
     const uploaded = 0n;
     const event = 0;
     const ip = info.ip;
@@ -124,17 +126,14 @@ export class AnnounceUdpRequest implements AnnounceRequest {
     );
   }
 
-  static updateWithConnectResponse(
-    request: AnnounceUdpRequest,
-    response: ConnectUdpResponse
-  ): AnnounceUdpRequest {
-    request.connectionId = response.connectionId
-    return request
+  static updateWithConnectResponse(request: AnnounceUdpRequest, response: ConnectUdpResponse): AnnounceUdpRequest {
+    request.connectionId = response.connectionId;
+    return request;
   }
 
   static toPacket(request: AnnounceUdpRequest): Buffer {
     if (request.connectionId === undefined || request.connectionId === null) {
-      throw new Error("Invalid connection id");
+      throw new Error('Invalid connection id');
     }
     const connectionIdBuffer = Buffer.alloc(8);
     connectionIdBuffer.writeBigInt64BE(request.connectionId, 0);
@@ -143,14 +142,14 @@ export class AnnounceUdpRequest implements AnnounceRequest {
     actionBuffer.writeUInt32BE(request.action, 0);
 
     if (request.transactionId === undefined || request.transactionId === null) {
-      throw new Error("Invalid transaction id");
+      throw new Error('Invalid transaction id');
     }
     const transactionIdBuffer = Buffer.alloc(4);
     transactionIdBuffer.writeUInt32BE(request.transactionId, 0);
 
-    const infoHashBuffer = Buffer.from(request.infoHash, "hex");
+    const infoHashBuffer = Buffer.from(request.infoHash, 'hex');
 
-    const peerIdBuffer = Buffer.from(request.peerId, "hex");
+    const peerIdBuffer = Buffer.from(request.peerId, 'hex');
 
     const downloadedBuffer = Buffer.alloc(8);
     downloadedBuffer.writeBigInt64BE(request.downloaded, 0);
@@ -162,17 +161,15 @@ export class AnnounceUdpRequest implements AnnounceRequest {
     uploadedBuffer.writeBigInt64BE(request.uploaded, 0);
 
     if (request.event === undefined || request.event === null) {
-      throw new Error("Invalid event");
+      throw new Error('Invalid event');
     }
     const eventBuffer = Buffer.alloc(4);
     eventBuffer.writeUInt32BE(request.event, 0);
 
-    const ipBuffer = Buffer.from(
-      request.ip.split(".").map((part) => parseInt(part, 10))
-    );
+    const ipBuffer = Buffer.from(request.ip.split('.').map((part) => parseInt(part, 10)));
 
     if (request.key === undefined || request.key === null) {
-      throw new Error("Invalid key");
+      throw new Error('Invalid key');
     }
     const keyBuffer = Buffer.alloc(4);
     keyBuffer.writeUInt32BE(request.key, 0);

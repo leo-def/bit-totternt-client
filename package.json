@@ -7,14 +7,20 @@
     "start": "node ./build/index.js",
     "start:dev": "npx nodemon",
     "build": "tsc",
-    "test": "ts-node ./tests/runTests.ts"
+    "test": "ts-node ./tests/runTests.ts",
+    "lint": "eslint 'src/**/*.ts' 'tests/**/*.ts'",
+    "format": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
     "nodemon": "^3.0.3",
+    "prettier": "^3.2.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }

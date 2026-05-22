@@ -1,8 +1,5 @@
-
 export enum AnnounceHttpRequestEventEnum {
-    STARTED = "started",
-    COMPLETED = "completed",
-    STOPPED = "stopped"
-  }
-  
-  
+  STARTED = 'started',
+  COMPLETED = 'completed',
+  STOPPED = 'stopped',
+}

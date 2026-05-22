@@ -1,7 +1,7 @@
-import { TrackerUdpRequestActionEnum } from "../../../enum/TrackerUdpRequestAction.enum";
-import { AnnounceUdpRequest } from "./AnnounceUdpRequest";
-import { PeerInfo } from "../../PeerInfo";
-import { AnnounceResponse } from "../AnnounceResponse";
+import { TrackerUdpRequestActionEnum } from '../../../enum/TrackerUdpRequestAction.enum';
+import { AnnounceUdpRequest } from './AnnounceUdpRequest';
+import { PeerInfo } from '../../PeerInfo';
+import { AnnounceResponse } from '../AnnounceResponse';
 
 export class AnnounceUdpResponse implements AnnounceResponse {
   constructor(
@@ -39,13 +39,10 @@ export class AnnounceUdpResponse implements AnnounceResponse {
      * Offset      Size            Name            Value
      * 4           32-bit integer  transaction_id
      */
-    readonly transactionId: number = 0
+    readonly transactionId: number = 0,
   ) {}
 
-  static validate(
-    request: AnnounceUdpRequest,
-    response: AnnounceUdpResponse
-  ): boolean {
+  static validate(request: AnnounceUdpRequest, response: AnnounceUdpResponse): boolean {
     return (
       request.action === response.action &&
       request.action === TrackerUdpRequestActionEnum.announce &&
@@ -61,13 +58,6 @@ export class AnnounceUdpResponse implements AnnounceResponse {
     const seeders = response.readUInt32BE(16); // Number of seeders
     const peers = PeerInfo.fromPacket(response.subarray(20));
 
-    return new AnnounceUdpResponse(
-        interval,
-        leechers,
-        seeders,
-        peers,
-        action,
-        transactionId,
-    );
+    return new AnnounceUdpResponse(interval, leechers, seeders, peers, action, transactionId);
   }
 }

@@ -1,4 +1,4 @@
-import { BencodeValue } from "./BencodeValue";
+import { BencodeValue } from './BencodeValue';
 
 export interface BencodeResult {
   value: BencodeValue | Array<BencodeValue>;

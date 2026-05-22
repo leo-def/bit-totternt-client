@@ -1,1 +1,1 @@
-export type BencodeValue = Object | string | number;
+export type BencodeValue = object | string | number;
