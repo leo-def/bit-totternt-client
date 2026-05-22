@@ -27,7 +27,7 @@ export class ConnectUdpRequest {
       return new ConnectUdpRequest(
         41727101980n,
         TrackerUdpRequestActionEnum.connect,
-        crypto.randomBytes(4).readInt32BE()
+        crypto.randomBytes(4).readUInt32BE(0)
       )
     }
   
@@ -36,9 +36,9 @@ export class ConnectUdpRequest {
       const protocolIdBuffer = Buffer.alloc(8)
       protocolIdBuffer.writeBigInt64BE(request.protocolId, 0)
       const actionBuffer = Buffer.alloc(4)
-      actionBuffer.writeInt32BE(request.action, 0)
+      actionBuffer.writeUInt32BE(request.action, 0)
       const transactionIdBuffer = Buffer.alloc(4)
-      transactionIdBuffer.writeInt32BE(request.transactionId, 0)
+      transactionIdBuffer.writeUInt32BE(request.transactionId, 0)
       return Buffer.concat([
         protocolIdBuffer,
         actionBuffer,

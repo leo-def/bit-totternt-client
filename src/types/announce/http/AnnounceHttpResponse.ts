@@ -57,7 +57,7 @@ constructor(
       trackerId: value["tracker id"],
       seeders: value["complete"],
       leechers: value["incomplete"],
-      peers: value["peers"],
+      peers: PeerInfo.fromTrackerValue(value["peers"]),
       peerId: value["peer id"],
       ip: value["ip"],
       port: value["port"],

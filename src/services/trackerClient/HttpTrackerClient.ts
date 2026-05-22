@@ -14,12 +14,9 @@ export class HttpTrackerClient implements TrackerClient {
     request: AnnounceHttpRequest
   ): Promise<AnnounceHttpResponse> {
     console.log(`Announce HTTP Request Body: ${JSON.stringify(request)}`);
-    const query = AnnounceHttpRequest.toParamsObject(
-      request as AnnounceHttpRequest
-    );
-    console.log(`Announce HTTP Request Query: ${JSON.stringify(query)}`);
-    const href = `${announce}?${query}`;
-    const responseBuff = await RequestUtils.resolve(href, {
+    const query = AnnounceHttpRequest.toQueryString(request);
+    console.log(`Announce HTTP Request Query: ${query}`);
+    const responseBuff = await RequestUtils.resolve(announce, {
       http: { query },
       https: { query },
     });

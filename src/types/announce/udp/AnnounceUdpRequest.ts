@@ -89,23 +89,23 @@ export class AnnounceUdpRequest implements AnnounceRequest {
 
   static build(info: PeerInfo, file: FileMetaInfo): AnnounceUdpRequest {
     const action = TrackerUdpRequestActionEnum.announce;
-    const transactionId = crypto.randomBytes(4).readInt32BE();
-    const infoHash = file.info?.pieces;
+    const transactionId = crypto.randomBytes(4).readUInt32BE(0);
+    const infoHash = (file as any).__infoHashHex ?? file.info?.pieces;
     const peerId = info.id;
     const downloaded = 0n;
-    const left = 0n;
-    const uploaded = 1n;
+    const left = BigInt(file.info?.length ?? file.info?.files?.reduce((total, torrentFile) => total + torrentFile.length, 0) ?? 0);
+    const uploaded = 0n;
     const event = 0;
     const ip = info.ip;
-    const key = crypto.randomBytes(4).readInt32BE();
+    const key = crypto.randomBytes(4).readUInt32BE(0);
     const numwant = 50;
     const port = info.port;
     const connectionId = undefined;
-    if(!infoHash){
-      throw new Error('Info hash not valid')
+    if (!infoHash) {
+      throw new Error('Info hash not valid');
     }
-    if(!peerId){
-      throw new Error('Peer id not valid')
+    if (!peerId) {
+      throw new Error('Peer id not valid');
     }
     return new AnnounceUdpRequest(
       infoHash,
@@ -133,20 +133,20 @@ export class AnnounceUdpRequest implements AnnounceRequest {
   }
 
   static toPacket(request: AnnounceUdpRequest): Buffer {
-    if (!request.connectionId) {
+    if (request.connectionId === undefined || request.connectionId === null) {
       throw new Error("Invalid connection id");
     }
     const connectionIdBuffer = Buffer.alloc(8);
     connectionIdBuffer.writeBigInt64BE(request.connectionId, 0);
 
     const actionBuffer = Buffer.alloc(4);
-    actionBuffer.writeInt32BE(request.action, 0);
+    actionBuffer.writeUInt32BE(request.action, 0);
 
-    if (!request.transactionId) {
+    if (request.transactionId === undefined || request.transactionId === null) {
       throw new Error("Invalid transaction id");
     }
     const transactionIdBuffer = Buffer.alloc(4);
-    transactionIdBuffer.writeInt32BE(request.transactionId, 0);
+    transactionIdBuffer.writeUInt32BE(request.transactionId, 0);
 
     const infoHashBuffer = Buffer.from(request.infoHash, "hex");
 
@@ -161,27 +161,27 @@ export class AnnounceUdpRequest implements AnnounceRequest {
     const uploadedBuffer = Buffer.alloc(8);
     uploadedBuffer.writeBigInt64BE(request.uploaded, 0);
 
-    if (!request.event) {
+    if (request.event === undefined || request.event === null) {
       throw new Error("Invalid event");
     }
     const eventBuffer = Buffer.alloc(4);
-    eventBuffer.writeInt32BE(request.event, 0);
+    eventBuffer.writeUInt32BE(request.event, 0);
 
     const ipBuffer = Buffer.from(
       request.ip.split(".").map((part) => parseInt(part, 10))
     );
 
-    if (!request.key) {
+    if (request.key === undefined || request.key === null) {
       throw new Error("Invalid key");
     }
     const keyBuffer = Buffer.alloc(4);
-    keyBuffer.writeInt32BE(request.key, 0);
+    keyBuffer.writeUInt32BE(request.key, 0);
 
     const numwantBuffer = Buffer.alloc(4);
     numwantBuffer.writeInt32BE(request.numwant, 0);
 
-    const portBuffer = Buffer.alloc(4);
-    portBuffer.writeInt32BE(request.port, 0);
+    const portBuffer = Buffer.alloc(2);
+    portBuffer.writeUInt16BE(request.port, 0);
 
     return Buffer.concat([
       connectionIdBuffer,

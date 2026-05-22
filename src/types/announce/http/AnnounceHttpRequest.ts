@@ -66,7 +66,7 @@ export class AnnounceHttpRequest implements AnnounceRequest {
   ){}
 
   static build(info: PeerInfo, file: FileMetaInfo): AnnounceHttpRequest {
-    const infoHash = file.info?.pieces
+    const infoHash = (file as any).__infoHashHex ?? file.info?.pieces
     const peerId = info.id
     const ip = info.ip
     const port = info.port
@@ -119,6 +119,13 @@ export class AnnounceHttpRequest implements AnnounceRequest {
     );
   }
 
+  static hexToUrlEncodedString(hex: string): string {
+    return Buffer.from(hex, 'hex')
+      .toJSON()
+      .data.map((byte: number) => `%${byte.toString(16).padStart(2, '0')}`)
+      .join('')
+  }
+
   static toParamsObject(object: AnnounceHttpRequest) {
     return {
        info_hash: object.infoHash,
@@ -133,5 +140,17 @@ export class AnnounceHttpRequest implements AnnounceRequest {
        no_peer_id: object.noPeerId,
        compact: object.compact,
     };
+  }
+
+  static toQueryString(object: AnnounceHttpRequest) {
+    const params = AnnounceHttpRequest.toParamsObject(object);
+    return Object.entries(params)
+      .map(([key, value]) => {
+        if (key === 'info_hash' || key === 'peer_id') {
+          return `${encodeURIComponent(key)}=${AnnounceHttpRequest.hexToUrlEncodedString(String(value))}`;
+        }
+        return `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`;
+      })
+      .join('&');
   }
 }

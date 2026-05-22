@@ -57,37 +57,66 @@ export class RequestUtils {
       });
     }
 
-    static udp(href: string, {body, listen}: any): Promise<Buffer> {
-      //tracker.example.com:1234
+    static udp(href: string, {body, listen, timeout = 5000}: any): Promise<Buffer> {
       const [, url] = href.split("://");
       const [host, port] = url.split(":");
       const offset = 0;
-      var client = dgram.createSocket("udp4").bind(listen?.port ?? 57838, listen?.ip ?? '0.0.0.0');
+      const client = dgram.createSocket("udp4");
       return new Promise((resolve, reject) => {
+        let timer: NodeJS.Timeout | undefined;
+        const cleanup = () => {
+          if (timer) {
+            clearTimeout(timer);
+            timer = undefined;
+          }
+          client.removeAllListeners();
+          try {
+            client.close();
+          } catch (e) {
+            // ignore close errors
+          }
+        };
+
+        timer = setTimeout(() => {
+          cleanup();
+          reject(new Error("UDP request timeout"));
+        }, timeout);
+
         client.on("listening", function () {
           var address = client.address();
           console.log(
             "UDP Server listening on " + address.address + ":" + address.port
           );
+          if (body) {
+            client.send(
+              body,
+              offset,
+              body.length,
+              Number(port),
+              host,
+              function (err, bytes) {
+                if (err) {
+                  cleanup();
+                  return reject(err);
+                }
+                console.log("UDP message " + bytes + " sent to " + host + ":" + port);
+              }
+            );
+          }
         });
-  
+
         client.on("message", function (message, remote) {
           console.log("UDP message received => " + remote.address + ":" + remote.port + " - " + message);
-          resolve(message)
+          cleanup();
+          resolve(message);
         });
-        if (body) {
-          client.send(
-            body,
-            offset,
-            body.length,
-            Number(port),
-            host,
-            function (err, bytes) {
-              if (err) reject(err);
-              console.log("UDP message " + bytes + " sent to " + host + ":" + port);
-            }
-          );
-        }
+
+        client.on("error", function (err) {
+          cleanup();
+          reject(err);
+        });
+
+        client.bind({ port: listen?.port ?? 0, address: listen?.ip ?? '0.0.0.0' });
       });
     }
   

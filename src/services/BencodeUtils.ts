@@ -153,4 +153,27 @@ export class BencodeUtils {
     }
     return String.fromCharCode(byteAt);
   }
+
+  static extractInfoBuffer(torrent: Buffer): Buffer {
+    const key = Buffer.from('4:info');
+    const idx = torrent.indexOf(key);
+    if (idx === -1) {
+      throw new Error('info key not found in torrent');
+    }
+    const start = idx + key.length;
+    const firstChar = this.charAt(torrent, start);
+    const result = BencodeUtils.handle(torrent, start);
+    if (!result) {
+      throw new Error('Failed to parse info dict');
+    }
+    let endExclusive: number;
+    if (firstChar === 'd' || firstChar === 'l') {
+      // For lists/dicts the parser returns index of 'e' (inclusive), add 1
+      endExclusive = result.lastIndex + 1;
+    } else {
+      // For strings/numbers parser returns exclusive end index
+      endExclusive = result.lastIndex;
+    }
+    return torrent.subarray(start, endExclusive);
+  }
 }
